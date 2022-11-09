@@ -26,10 +26,11 @@ const stacks: CustomStackType[] = [
     },
 ]
 
-function App() {
+function MainNavigation() {
     const renderStacksHandler = useCallback((stackItemObject: CustomStackType) => {
         return (
             <Stack.Screen
+                key={stackItemObject.name}
                 {...stackItemObject}
             />
         )
@@ -46,4 +47,4 @@ function App() {
     );
 }
 
-export default App
+export default MainNavigation

@@ -1,8 +1,18 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import * as productAPIs from '../../services/productsAPI'
 
-type Product = {
-    name: string
+export type Product = {
+    _id: string,
+    name: string,
+    avatar: string,
+    description: string,
+    price: number,
+    category: string,
+    developerEmail: string,
+    createdAt: string,
+    updatedAt: string,
+    __v: number
 }
 
 export interface ProductsState {
@@ -12,6 +22,18 @@ export interface ProductsState {
 const initialState: ProductsState = {
     data: [],
 }
+
+export const getProductsThunk = createAsyncThunk(
+    'products',
+    async (state, { getState, requestId }) => {
+        // const { currentRequestId, loading } = getState().users
+        // if (loading !== 'pending' || requestId !== currentRequestId) {
+        //     return
+        // }
+        const response = await productAPIs.getProducts()
+        return response.data
+    }
+)
 
 export const productsSlice = createSlice({
     name: 'products',
@@ -30,6 +52,19 @@ export const productsSlice = createSlice({
             // immutable state based off those changes
             // state.value += action.payload
         },
+    },
+    extraReducers(builder) {
+        builder.addCase(getProductsThunk.pending, (state, action) => {
+            // Pending state for getProducts async call
+        })
+        builder.addCase(getProductsThunk.fulfilled, (state, action) => {
+            // Fulfilled state for getProducts async call
+            const { message, products } = action.payload
+            state.data = products
+        })
+        builder.addCase(getProductsThunk.rejected, (state, action) => {
+            // Rejected state for getProducts async call
+        })
     },
 })
 
