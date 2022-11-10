@@ -1,5 +1,5 @@
-import React, {useMemo} from 'react';
-import {StyleProp, StyleSheet, Text, TextProps, TextStyle} from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, StyleSheet, Text, TextProps, TextStyle } from 'react-native';
 
 type BoldTextProps = {
   children: string | React.ReactNode;
@@ -25,4 +25,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BoldText;
+function arePropsEqual(prevProps: BoldTextProps, nextProps: BoldTextProps) {
+  return prevProps.children === nextProps.children
+}
+
+export default React.memo(BoldText, arePropsEqual);

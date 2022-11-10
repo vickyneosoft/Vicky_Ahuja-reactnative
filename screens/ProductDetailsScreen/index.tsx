@@ -27,7 +27,11 @@ const ProductDetailsScreen: React.FC<NativeStackScreenProps<ProductDetailsScreen
     const productDetails = useAppSelector(state => state.products.data.find(product => product._id === route.params.productId))
 
     if (!productDetails) {
-        return null
+        return (
+            <View style={styles.centeredView}>
+                <BoldText>{"Something went wrong please try again!"}</BoldText>
+            </View>
+        )
     }
 
     const {
@@ -76,6 +80,12 @@ const styles = StyleSheet.create({
     rootContainer: {
         flex: 1,
         backgroundColor: colors.white
+    },
+    centeredView: {
+        flex: 1,
+        backgroundColor: colors.white,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     productImg: {
         height: height / 2.5,

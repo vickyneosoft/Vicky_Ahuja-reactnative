@@ -1,11 +1,11 @@
-import React, {useMemo} from 'react';
-import {StyleProp, StyleSheet, Text, TextProps, TextStyle} from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, StyleSheet, Text, TextProps, TextStyle } from 'react-native';
 
-type BoldTextProps = {
+type RegularTextProps = {
   children: string | React.ReactNode;
 };
 
-const RegularText = (props: BoldTextProps & TextProps) => {
+const RegularText = (props: RegularTextProps & TextProps) => {
   const mergedStyle = useMemo<StyleProp<TextStyle>>(
     () => StyleSheet.compose(styles.container as TextStyle, props.style),
     [props],
@@ -24,4 +24,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegularText;
+function arePropsEqual(prevProps: RegularTextProps, nextProps: RegularTextProps) {
+  return prevProps.children === nextProps.children
+}
+
+export default React.memo(RegularText, arePropsEqual);

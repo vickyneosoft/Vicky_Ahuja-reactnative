@@ -1,9 +1,13 @@
 import React, { useEffect, useCallback, useMemo, useLayoutEffect } from 'react'
 import { ActivityIndicator, FlatList, InteractionManager, ListRenderItemInfo, ScrollView, StyleSheet, View } from 'react-native'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 // Components
-import ProductItem from '../../components/ProductItem'
+import FloatingButton from '../../components/FloatingButton'
 import CategoryItem from '../../components/CategoryItem'
+import SearchButton from '../../components/SearchButton'
+import ProductItem from '../../components/ProductItem'
+import BoldText from '../../components/BoldText'
 
 // Hooks
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks'
@@ -17,10 +21,6 @@ import { getProductsThunk, Product } from '../../store/slices/productsSlice'
 
 // Misc
 import { customLog, keyExtractorHandler, showToast } from '../../utils/miscUtils'
-import FloatingButton from '../../components/FloatingButton'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import SearchButton from '../../components/SearchButton'
-import BoldText from '../../components/BoldText'
 
 const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
     const { navigation } = props

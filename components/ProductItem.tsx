@@ -51,7 +51,7 @@ const ProductItem = (props: ProductItemProps) => {
                     </BoldText>
                     <Pressable
                         onPress={onEditPressHandler}
-                        style={{ padding: 10 }}
+                        style={{ padding: 5 }}
                     >
                         <Image
                             style={styles.editImg}
@@ -115,4 +115,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ProductItem
+export default React.memo(ProductItem)
