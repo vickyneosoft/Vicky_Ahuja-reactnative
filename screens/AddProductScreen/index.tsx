@@ -274,6 +274,8 @@ const AddProductScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => 
                         )}
                         initialValue={initialValues.productPrice}
                         errorMsg={errors.productPrice}
+                        maxLength={10}
+                        keyboardType="number-pad"
                     />
                     <AppInput
                         ref={productDescriptionRef}
@@ -298,6 +300,7 @@ const AddProductScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => 
                             null,
                             FormFieldIds.PRODUCT_IMG_LINK,
                         )}
+                        maxLength={1000}
                         initialValue={initialValues.productImgLink}
                         errorMsg={errors.productImgLink}
                     />

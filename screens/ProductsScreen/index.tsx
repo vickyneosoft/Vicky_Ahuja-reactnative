@@ -146,7 +146,7 @@ const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
     }, [navigation])
 
     const onSearchBtnPressHandler = useCallback(() => {
-        customLog('Coming Soon')
+        showToast('Coming Soon')
     }, [])
 
     useLayoutEffect(() => {
@@ -219,7 +219,8 @@ const styles = StyleSheet.create({
     listContainerStyle: {
         paddingHorizontal: 10,
         paddingTop: 10,
-        minHeight: "100%"
+        minHeight: "100%",
+        paddingBottom: 100,
     }
 })
 
