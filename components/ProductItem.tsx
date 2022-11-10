@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Pressable, StyleSheet, View } from 'react-native'
+import { Pressable, StyleSheet, View, Image } from 'react-native'
 import FastImage from 'react-native-fast-image'
 
 // Components
@@ -7,12 +7,14 @@ import BoldText from "./BoldText";
 
 // Constants
 import colors from "../constants/colors";
+import images from "../assets/images";
 
 type ProductItemProps = {
     avatar: string
     name: string
     price: number
     onPress: () => any
+    onEditPressHandler: () => void
 }
 
 const ProductItem = (props: ProductItemProps) => {
@@ -20,7 +22,8 @@ const ProductItem = (props: ProductItemProps) => {
         avatar,
         name,
         price,
-        onPress
+        onPress,
+        onEditPressHandler
     } = props
 
     const productImg = useMemo(() => ({ uri: avatar }), [avatar])
@@ -46,9 +49,15 @@ const ProductItem = (props: ProductItemProps) => {
                     <BoldText style={styles.font}>
                         ${price}
                     </BoldText>
-                    <BoldText style={styles.font}>
-                        $
-                    </BoldText>
+                    <Pressable
+                        onPress={onEditPressHandler}
+                        style={{ padding: 10 }}
+                    >
+                        <Image
+                            style={styles.editImg}
+                            source={images.ic_edit}
+                        />
+                    </Pressable>
                 </View>
             </View>
         </Pressable>
@@ -97,7 +106,12 @@ const styles = StyleSheet.create({
     },
     priceAndBtnContainer: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between'
+    },
+    editImg: {
+        height: 14,
+        width: 14
     }
 })
 

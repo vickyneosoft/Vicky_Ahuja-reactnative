@@ -4,7 +4,7 @@ import images from '../assets/images'
 import colors from '../constants/colors'
 
 type FloatingButtonProps = {
-    onPress: () => any
+    onPress: () => void
 }
 
 const FloatingButton: React.FC<FloatingButtonProps> = (props) => {

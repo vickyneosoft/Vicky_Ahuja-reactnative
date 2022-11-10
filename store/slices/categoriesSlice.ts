@@ -10,22 +10,22 @@ export type Category = {
 }
 
 export interface CategoriesState {
+    isLoading: boolean,
+    error: string | undefined,
     selectedCategory: Category | null
     data: Category[]
 }
 
 const initialState: CategoriesState = {
+    isLoading: false,
+    error: '',
     selectedCategory: null,
     data: [],
 }
 
 export const getCategoriesThunk = createAsyncThunk(
     'categories',
-    async (state, { getState, requestId }) => {
-        // const { currentRequestId, loading } = getState().users
-        // if (loading !== 'pending' || requestId !== currentRequestId) {
-        //     return
-        // }
+    async () => {
         const response = await productAPIs.getCategories()
         return response.data
     }
@@ -43,15 +43,16 @@ export const categoriesSlice = createSlice({
     },
     extraReducers(builder) {
         builder.addCase(getCategoriesThunk.pending, (state, action) => {
-            // Pending state for getCategories async call
+            state.isLoading = true
         })
         builder.addCase(getCategoriesThunk.fulfilled, (state, action) => {
-            // Fulfilled state for getCategories async call
             const { message, categories } = action.payload
             state.data = categories
+            state.isLoading = false
         })
         builder.addCase(getCategoriesThunk.rejected, (state, action) => {
-            // Rejected state for getCategories async call
+            state.error = action.error.message
+            state.isLoading = false
         })
     },
 })

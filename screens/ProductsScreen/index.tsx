@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useMemo, useLayoutEffect } from 'react'
-import { Pressable, Image, FlatList, InteractionManager, ListRenderItemInfo, ScrollView, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, FlatList, InteractionManager, ListRenderItemInfo, ScrollView, StyleSheet, View } from 'react-native'
 
 // Components
 import ProductItem from '../../components/ProductItem'
@@ -16,19 +16,39 @@ import { Category, getCategoriesThunk, setSelectedCategory } from '../../store/s
 import { getProductsThunk, Product } from '../../store/slices/productsSlice'
 
 // Misc
-import { customLog, keyExtractorHandler } from '../../utils/miscUtils'
+import { customLog, keyExtractorHandler, showToast } from '../../utils/miscUtils'
 import FloatingButton from '../../components/FloatingButton'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import images from '../../assets/images'
 import SearchButton from '../../components/SearchButton'
+import BoldText from '../../components/BoldText'
 
 const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
     const { navigation } = props
 
     const dispatch = useAppDispatch()
 
-    const { data: products, filteredData: filteredProducts } = useAppSelector((state) => state.products)
-    const { data: categories, selectedCategory } = useAppSelector((state) => state.categories)
+    const {
+        data: products,
+        filteredData: filteredProducts,
+        isLoading: isProductLoading,
+        error: productError
+    } = useAppSelector((state) => state.products)
+
+    const {
+        data: categories,
+        selectedCategory,
+        isLoading: isCategoryLoading,
+        error: categoryError
+    } = useAppSelector((state) => state.categories)
+
+    useEffect(() => {
+        if (categoryError) {
+            showToast(categoryError)
+        }
+        if (productError) {
+            showToast(productError)
+        }
+    }, [categoryError, productError])
 
     const initHandler = useCallback(() => {
         try {
@@ -48,6 +68,10 @@ const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
             productId
         })
     }, [navigation])
+
+    const onEditItemHandler = useCallback((productId: string) => {
+        customLog('Coming soon edit for : ', productId)
+    }, [])
 
     const renderProductItemHandler = useCallback((productItem: ListRenderItemInfo<Product>) => {
         try {
@@ -71,13 +95,14 @@ const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
                     avatar={avatar}
                     price={price}
                     onPress={onProductPressHandler.bind(null, _id)}
+                    onEditPressHandler={onEditItemHandler.bind(null, _id)}
                 />
             )
         } catch (err: any) {
             customLog('[ProductsScreen - renderProductItemHandler] Error : ', err?.message)
             return null
         }
-    }, [])
+    }, [onProductPressHandler, onEditItemHandler])
 
     const onCategoryPressHandler = useCallback((category: Category) => {
         dispatch(setSelectedCategory(category))
@@ -136,6 +161,25 @@ const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
         })
     }, [onSearchBtnPressHandler])
 
+    const listEmptyComponent = useMemo(() => {
+        return (
+            <View style={styles.centeredView}>
+                {
+                    isCategoryLoading || isProductLoading
+                        ?
+                        <ActivityIndicator
+                            size={"large"}
+                            color={colors.black}
+                        />
+                        : categoryError || productError
+                            ? <BoldText>{categoryError ?? productError}</BoldText>
+                            : <BoldText>{"No Data Found!"}</BoldText>
+
+                }
+            </View>
+        )
+    }, [isCategoryLoading, isProductLoading, categoryError, productError])
+
     return (
         <View style={styles.rootContainer}>
             <FlatList
@@ -143,10 +187,11 @@ const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
                 renderItem={renderProductItemHandler}
                 keyExtractor={keyExtractorHandler}
                 numColumns={2}
+                style={styles.rootContainer}
                 initialNumToRender={10}
                 maxToRenderPerBatch={10}
                 ListHeaderComponent={listHeaderComponent}
-                ListEmptyComponent={null}
+                ListEmptyComponent={listEmptyComponent}
                 contentContainerStyle={styles.listContainerStyle}
             />
             <FloatingButton
@@ -161,13 +206,20 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: colors.white
     },
+    centeredView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.white
+    },
     categoryContainer: {
         paddingVertical: 10,
         paddingHorizontal: 5
     },
     listContainerStyle: {
         paddingHorizontal: 10,
-        paddingTop: 10
+        paddingTop: 10,
+        minHeight: "100%"
     }
 })
 

@@ -1,3 +1,4 @@
 export default {
     bearerToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpY2t5LmFodWphQG5lb3NvZnRtYWlsLmNvbSIsImdpdGh1YiI6Imh0dHBzOi8vZ2l0aHViLmNvbS92aWNreW5lb3NvZnQiLCJpYXQiOjE2Njc5OTk3NTYsImV4cCI6MTY2ODQzMTc1Nn0.UJdu659o49UWRMn5oECZLpsZ_172BUx5QYm23ZOcOf4',
+    developerEmail: 'vicky.ahuja@neosoftmail.com',
 }

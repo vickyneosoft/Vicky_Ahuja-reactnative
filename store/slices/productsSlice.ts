@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import * as productAPIs from '../../services/productsAPI'
-import { Category, setSelectedCategory } from './categoriesSlice'
+import { Category } from './categoriesSlice'
+import { AddProductAPIResponse, AddProductType, GetProductsAPIResponse } from '../../types'
+import { customLog } from '../../utils/miscUtils'
 
 export type Product = {
     _id: string,
@@ -17,19 +19,31 @@ export type Product = {
 }
 
 export interface ProductsState {
+    isLoading: boolean,
+    error: string | undefined,
     data: Product[]
     filteredData: Product[]
 }
 
 const initialState: ProductsState = {
+    isLoading: false,
+    error: '',
     data: [],
     filteredData: []
 }
 
-export const getProductsThunk = createAsyncThunk(
+export const getProductsThunk = createAsyncThunk<GetProductsAPIResponse>(
     'products',
-    async (state, { getState, requestId }) => {
+    async () => {
         const response = await productAPIs.getProducts()
+        return response.data
+    }
+)
+
+export const addProductsThunk = createAsyncThunk<AddProductAPIResponse, AddProductType>(
+    'addProduct',
+    async (payload) => {
+        const response = await productAPIs.addProduct(payload)
         return response.data
     }
 )
@@ -37,33 +51,40 @@ export const getProductsThunk = createAsyncThunk(
 export const productsSlice = createSlice({
     name: 'products',
     initialState,
-    reducers: {
-        getProducts: () => {
-
-        },
-        getProductDetails: (state, action: PayloadAction<number>) => {
-
-        },
-        addProduct: (state, action: PayloadAction<number>) => {
-            // Redux Toolkit allows us to write "mutating" logic in reducers. It
-            // doesn't actually mutate the state because it uses the Immer library,
-            // which detects changes to a "draft state" and produces a brand new
-            // immutable state based off those changes
-            // state.value += action.payload
-        }
-    },
+    reducers: {},
     extraReducers(builder) {
+        /**
+         * getProductsThunk
+         */
         builder.addCase(getProductsThunk.pending, (state, action) => {
-            // Pending state for getProducts async call
+            state.isLoading = true
         })
         builder.addCase(getProductsThunk.fulfilled, (state, action) => {
-            // Fulfilled state for getProducts async call
             const { message, products } = action.payload
+            state.isLoading = false
             state.data = products
         })
         builder.addCase(getProductsThunk.rejected, (state, action) => {
-            // Rejected state for getProducts async call
+            state.isLoading = false
+            state.error = action.error.message
         })
+
+        /**
+         * addProductsThunk
+         */
+        builder.addCase(addProductsThunk.pending, (state, action) => {
+            state.isLoading = true
+        })
+        builder.addCase(addProductsThunk.fulfilled, (state, action) => {
+            const { message, product } = action.payload
+            state.data = [product, ...state.data]
+            state.isLoading = false
+        })
+        builder.addCase(addProductsThunk.rejected, (state, action) => {
+            state.error = action.error.message
+            state.isLoading = false
+        })
+
         builder.addMatcher((action: PayloadAction<Category | any>) => {
             return action.type.endsWith('/setSelectedCategory')
         }, (state, action: PayloadAction<Category>) => {
@@ -73,6 +94,6 @@ export const productsSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { getProducts, getProductDetails, addProduct } = productsSlice.actions
+// export const {  } = productsSlice.actions
 
 export default productsSlice.reducer

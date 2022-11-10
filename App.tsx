@@ -8,20 +8,25 @@
  * @format
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   SafeAreaView,
   StatusBar,
   useColorScheme,
 } from 'react-native';
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
-import MainNavigation from './navigation/MainNavigation';
+
 import { Provider } from 'react-redux'
+
+import MainNavigation from './navigation/MainNavigation';
+import ErrorBoundary from './components/ErrorBoundary';
+
 import { store } from './store'
-import constants from './constants';
+
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -32,15 +37,19 @@ const App = () => {
   };
 
   return (
-    <Provider store={store}>
-      <SafeAreaView style={backgroundStyle}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <MainNavigation />
-      </SafeAreaView>
-    </Provider>
+    <ErrorBoundary>
+      <RootSiblingParent>
+        <Provider store={store}>
+          <SafeAreaView style={backgroundStyle}>
+            <StatusBar
+              barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+              backgroundColor={backgroundStyle.backgroundColor}
+            />
+            <MainNavigation />
+          </SafeAreaView>
+        </Provider>
+      </RootSiblingParent>
+    </ErrorBoundary>
   );
 };
 

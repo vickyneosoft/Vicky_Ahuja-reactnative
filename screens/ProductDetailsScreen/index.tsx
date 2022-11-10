@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
     },
     productImg: {
         height: height / 2.5,
-        width
+        width,
+        marginBottom: 20
     },
     scrollView: {
         flex: 1
