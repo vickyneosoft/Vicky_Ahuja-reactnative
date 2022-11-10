@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default React.memo(FloatingButton)
+export default FloatingButton

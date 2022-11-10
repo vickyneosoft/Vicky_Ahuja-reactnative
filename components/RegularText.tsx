@@ -24,8 +24,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function arePropsEqual(prevProps: RegularTextProps, nextProps: RegularTextProps) {
-  return prevProps.children === nextProps.children
-}
-
-export default React.memo(RegularText, arePropsEqual);
+export default RegularText

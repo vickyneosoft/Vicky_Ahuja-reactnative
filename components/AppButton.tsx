@@ -42,4 +42,4 @@ const styles = StyleSheet.create({
   text: { color: colors.white },
 });
 
-export default React.memo(AppButton);
+export default AppButton

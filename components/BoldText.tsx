@@ -25,8 +25,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function arePropsEqual(prevProps: BoldTextProps, nextProps: BoldTextProps) {
-  return prevProps.children === nextProps.children
-}
-
-export default React.memo(BoldText, arePropsEqual);
+export default BoldText

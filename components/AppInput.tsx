@@ -152,4 +152,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(AppInput);
+export default AppInput
