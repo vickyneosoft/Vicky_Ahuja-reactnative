@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import BoldText from '../../components/BoldText'
+import colors from '../../constants/colors'
 
 const AddProductScreen = () => {
     return (
@@ -13,8 +14,7 @@ const AddProductScreen = () => {
 const styles = StyleSheet.create({
     rootContainer: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+        backgroundColor: colors.white
     }
 })
 

@@ -15,16 +15,29 @@ const Stack = createNativeStackNavigator()
 const stacks: CustomStackType[] = [
     {
         name: 'products',
-        component: ProductsScreen
+        component: ProductsScreen,
+        options: {
+            headerTitle: 'UPayments Store',
+        }
     },
     {
         name: 'addProduct',
-        component: AddProductScreen
+        component: AddProductScreen,
+        options: {
+            headerTitle: 'Add Product',
+        }
     }, {
         name: 'productDetails',
-        component: ProductDetailsScreen
+        component: ProductDetailsScreen,
+        options: {
+            headerTitle: 'Product Details',
+        }
     },
 ]
+
+const rootStackOptions = {
+    headerShadowVisible: false
+}
 
 function MainNavigation() {
     const renderStacksHandler = useCallback((stackItemObject: CustomStackType) => {
@@ -40,7 +53,9 @@ function MainNavigation() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator
+                screenOptions={rootStackOptions}
+            >
                 {myStacks}
             </Stack.Navigator>
         </NavigationContainer>

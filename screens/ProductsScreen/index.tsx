@@ -1,42 +1,53 @@
-import React, { useEffect, useCallback, useMemo } from 'react'
-import { FlatList, InteractionManager, ListRenderItemInfo, ScrollView, StyleSheet, View } from 'react-native'
-import BoldText from '../../components/BoldText'
-import CategoryItem from '../../components/CategoryItem'
+import React, { useEffect, useCallback, useMemo, useLayoutEffect } from 'react'
+import { Pressable, Image, FlatList, InteractionManager, ListRenderItemInfo, ScrollView, StyleSheet, View } from 'react-native'
 
 // Components
 import ProductItem from '../../components/ProductItem'
-import colors from '../../constants/colors'
-import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks'
-import { Category, getCategoriesThunk } from '../../store/slices/categoriesSlice'
-import { getProductsThunk, Product } from '../../store/slices/productsSlice'
-import { customLog, keyExtractorHandler } from '../../utils/miscUtils'
+import CategoryItem from '../../components/CategoryItem'
 
-const ProductsScreen = (props: any) => {
+// Hooks
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks'
+
+// Constants
+import colors from '../../constants/colors'
+
+// Redux store
+import { Category, getCategoriesThunk, setSelectedCategory } from '../../store/slices/categoriesSlice'
+import { getProductsThunk, Product } from '../../store/slices/productsSlice'
+
+// Misc
+import { customLog, keyExtractorHandler } from '../../utils/miscUtils'
+import FloatingButton from '../../components/FloatingButton'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import images from '../../assets/images'
+import SearchButton from '../../components/SearchButton'
+
+const ProductsScreen: React.FC<NativeStackScreenProps<any, any>> = (props) => {
     const { navigation } = props
 
     const dispatch = useAppDispatch()
 
-    const { data: products } = useAppSelector((state: any) => state.products)
-    const { data: categories } = useAppSelector((state: any) => state.categories)
-
+    const { data: products, filteredData: filteredProducts } = useAppSelector((state) => state.products)
+    const { data: categories, selectedCategory } = useAppSelector((state) => state.categories)
 
     const initHandler = useCallback(() => {
         try {
-            dispatch(getProductsThunk())
             dispatch(getCategoriesThunk())
+            dispatch(getProductsThunk())
         } catch (err: any) {
             customLog("[ProductsScreen] Error : ", err?.message)
         }
     }, [dispatch])
-
 
     useEffect(() => {
         InteractionManager.runAfterInteractions(initHandler)
     }, [initHandler])
 
     const onProductPressHandler = useCallback((productId: string) => {
-
-    }, [])
+        navigation.navigate('productDetails', {
+            productId
+        })
+    }, [navigation])
 
     const renderProductItemHandler = useCallback((productItem: ListRenderItemInfo<Product>) => {
         try {
@@ -68,20 +79,26 @@ const ProductsScreen = (props: any) => {
         }
     }, [])
 
+    const onCategoryPressHandler = useCallback((category: Category) => {
+        dispatch(setSelectedCategory(category))
+    }, [dispatch])
+
     const renderCategoryItemHandler = useCallback((categoryItem: Category) => {
         try {
             const { __v, _id, createdAt, name, updatedAt } = categoryItem
             return (
                 <CategoryItem
+                    key={_id}
                     name={name}
-                    onPress={() => { }}
-                    selected={false}
+                    onPress={onCategoryPressHandler.bind(null, categoryItem)}
+                    selected={_id === selectedCategory?._id}
                 />
             )
         } catch (err: any) {
-            console.log('Error : ', err?.message)
+            console.log('[renderCategoryItemHandler] Error : ', err?.message)
+            return null
         }
-    }, [])
+    }, [selectedCategory, onCategoryPressHandler])
 
     const renderCategories = useMemo(() => {
         return categories.map(renderCategoryItemHandler)
@@ -91,21 +108,38 @@ const ProductsScreen = (props: any) => {
         return (
             <ScrollView
                 horizontal
-                contentContainerStyle={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 10
-                }}
+                contentContainerStyle={styles.categoryContainer}
                 showsHorizontalScrollIndicator={false}
             >
                 {renderCategories}
             </ScrollView>
         )
-    }, [categories])
+    }, [categories, renderCategories])
+
+    const onAddNewProductPressHandler = useCallback(() => {
+        navigation.navigate('addProduct')
+    }, [navigation])
+
+    const onSearchBtnPressHandler = useCallback(() => {
+        customLog('Coming Soon')
+    }, [])
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: (_headerRightOptions) => {
+                return (
+                    <SearchButton
+                        onPress={onSearchBtnPressHandler}
+                    />
+                )
+            }
+        })
+    }, [onSearchBtnPressHandler])
 
     return (
         <View style={styles.rootContainer}>
             <FlatList
-                data={products}
+                data={filteredProducts.length ? filteredProducts : products}
                 renderItem={renderProductItemHandler}
                 keyExtractor={keyExtractorHandler}
                 numColumns={2}
@@ -115,6 +149,9 @@ const ProductsScreen = (props: any) => {
                 ListEmptyComponent={null}
                 contentContainerStyle={styles.listContainerStyle}
             />
+            <FloatingButton
+                onPress={onAddNewProductPressHandler}
+            />
         </View>
     )
 }
@@ -123,6 +160,10 @@ const styles = StyleSheet.create({
     rootContainer: {
         flex: 1,
         backgroundColor: colors.white
+    },
+    categoryContainer: {
+        paddingVertical: 10,
+        paddingHorizontal: 5
     },
     listContainerStyle: {
         paddingHorizontal: 10,

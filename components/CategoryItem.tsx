@@ -9,7 +9,7 @@ type CategoryItemProps = {
     onPress: () => any
 }
 
-const CategoryItem = (props: CategoryItemProps) => {
+const CategoryItem: React.FC<CategoryItemProps> = (props) => {
     const { name, selected, onPress } = props
 
     const containerStyle = useMemo(() => {
@@ -51,12 +51,15 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        borderWidth: 1
     },
     activeContainerStyle: {
-        backgroundColor: colors.white
+        backgroundColor: colors.white,
+        borderColor: colors.black
     },
     inActiveContainerStyle: {
-        backgroundColor: colors.black
+        backgroundColor: colors.black,
+        borderColor: colors.white
     },
     activeFont: {
         color: colors.black
@@ -66,4 +69,8 @@ const styles = StyleSheet.create({
     }
 })
 
-export default CategoryItem
+function arePropsEqual(prevProps: CategoryItemProps, nextProps: CategoryItemProps) {
+    return prevProps.name === nextProps.name && prevProps.selected === nextProps.selected
+}
+
+export default React.memo(CategoryItem, arePropsEqual)

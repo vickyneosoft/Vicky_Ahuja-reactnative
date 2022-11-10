@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import * as productAPIs from '../../services/productsAPI'
+import { Category, setSelectedCategory } from './categoriesSlice'
 
 export type Product = {
     _id: string,
@@ -17,19 +18,17 @@ export type Product = {
 
 export interface ProductsState {
     data: Product[]
+    filteredData: Product[]
 }
 
 const initialState: ProductsState = {
     data: [],
+    filteredData: []
 }
 
 export const getProductsThunk = createAsyncThunk(
     'products',
     async (state, { getState, requestId }) => {
-        // const { currentRequestId, loading } = getState().users
-        // if (loading !== 'pending' || requestId !== currentRequestId) {
-        //     return
-        // }
         const response = await productAPIs.getProducts()
         return response.data
     }
@@ -51,7 +50,7 @@ export const productsSlice = createSlice({
             // which detects changes to a "draft state" and produces a brand new
             // immutable state based off those changes
             // state.value += action.payload
-        },
+        }
     },
     extraReducers(builder) {
         builder.addCase(getProductsThunk.pending, (state, action) => {
@@ -64,6 +63,11 @@ export const productsSlice = createSlice({
         })
         builder.addCase(getProductsThunk.rejected, (state, action) => {
             // Rejected state for getProducts async call
+        })
+        builder.addMatcher((action: PayloadAction<Category | any>) => {
+            return action.type.endsWith('/setSelectedCategory')
+        }, (state, action: PayloadAction<Category>) => {
+            state.filteredData = state.data.filter(product => product.category.trim().toLowerCase() === action.payload.name.trim().toLowerCase())
         })
     },
 })
